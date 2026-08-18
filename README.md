@@ -52,3 +52,4 @@ pnpm --filter @miabega/mobile start     # app mobile (Expo)
 Des valeurs fictives sont fournies ; les remplacer par les vraies clés Supabase
 avant tout test réel. Après un `pnpm install`, pour le mobile aligner les deps
 natives avec `cd apps/mobile && npx expo install`.
+# MiabeGa
