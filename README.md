@@ -8,11 +8,11 @@ Monorepo **web + mobile + Supabase**. Voir [`ARCHITECTURE.md`](./ARCHITECTURE.md
 ```
 miabeGa/
 ├── apps/
-│   ├── web/        Next.js 15 + React 19 + Tailwind v4 + shadcn/ui (existant)
-│   └── mobile/     Expo + React Native (à initialiser)
+│   ├── web/        Next.js 15 + React 19 + Tailwind v4 + shadcn/ui
+│   └── mobile/     Expo SDK 57 + expo-router (structure src/)
 ├── packages/
 │   ├── shared/     Types TypeScript + schémas Zod
-│   ├── core/       Logique métier pure
+│   ├── core/       Logique métier pure (testée, 64 tests)
 │   ├── api/        Couche d'accès Supabase
 │   └── config/     tsconfig partagé
 ├── supabase/
@@ -31,9 +31,24 @@ pnpm web        # lance l'app web (apps/web)
 
 Copier `apps/web/.env.local.example` en `apps/web/.env.local` et renseigner les clés Supabase.
 
-## Migration depuis miabeGa2
+## Logique métier partagée
 
-Le code Next.js existant a été placé tel quel dans `apps/web` (il reste fonctionnel).
-Les `packages/*` sont des squelettes : en Phase 2, on y migre progressivement les
-types (`apps/web/lib/types.ts` → `packages/shared`) et le client Supabase
-(`apps/web/lib/supabase` → `packages/api`) pour les partager avec le mobile.
+`@miabega/core` centralise tous les calculs (progression d'objectifs/projets,
+épargne, taux, jours restants, contributions, projection) — code pur, testé
+(64 tests unitaires vitest). Le web (`apps/web`) et le mobile (`apps/mobile`)
+consomment exactement les mêmes fonctions : zéro duplication.
+
+```bash
+pnpm --filter @miabega/core test        # lance les tests
+pnpm --filter @miabega/web dev          # app web
+pnpm --filter @miabega/mobile start     # app mobile (Expo)
+```
+
+## Env
+
+- Web : `apps/web/.env.local` (`NEXT_PUBLIC_SUPABASE_*`)
+- Mobile : `apps/mobile/.env` (`EXPO_PUBLIC_SUPABASE_*`)
+
+Des valeurs fictives sont fournies ; les remplacer par les vraies clés Supabase
+avant tout test réel. Après un `pnpm install`, pour le mobile aligner les deps
+natives avec `cd apps/mobile && npx expo install`.

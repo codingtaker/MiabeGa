@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Search, Filter, Plus, Users, Calendar, TrendingUp, CheckCircle, Clock, MapPin } from 'lucide-react'
 import type { Project, Screen } from '@miabega/shared'
+import { projectProgress, projectRemaining } from '@miabega/core'
 
 interface ProjectsProps {
   projects: Project[]
@@ -172,12 +173,12 @@ export default function Projects({ projects, onNavigate }: ProjectsProps) {
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">Progression</span>
                       <span className="font-semibold text-gray-800 dark:text-gray-100">
-                        {((project.currentAmount / project.targetAmount) * 100).toFixed(1)}%
+                        {projectProgress(project).toFixed(1)}%
                       </span>
                     </div>
 
                     <Progress
-                      value={(project.currentAmount / project.targetAmount) * 100}
+                      value={projectProgress(project)}
                       className="h-3"
                     />
 
@@ -186,7 +187,7 @@ export default function Projects({ projects, onNavigate }: ProjectsProps) {
                         {project.currentAmount.toLocaleString()} / {project.targetAmount.toLocaleString()} FCFA
                       </span>
                       <span className="text-gray-500 dark:text-gray-400">
-                        Reste: {(project.targetAmount - project.currentAmount).toLocaleString()} FCFA
+                        Reste: {projectRemaining(project).toLocaleString()} FCFA
                       </span>
                     </div>
                   </div>
