@@ -1,0 +1,15 @@
+{
+  "name": "@miabega/api",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@miabega/shared": "workspace:*",
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7"
+  },
+  "devDependencies": {
+    "@miabega/config": "workspace:*"
+  }
+}
