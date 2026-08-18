@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Annule les exécutions précédentes sur une même branche/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Install · Test · Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        # Lockfile encore amené à évoluer tôt dans le projet : on ne gèle pas.
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Tests unitaires (core)
+        run: pnpm --filter @miabega/core test
+
+      - name: Typecheck (packages + web)
+        run: >
+          pnpm
+          --filter @miabega/shared
+          --filter @miabega/api
+          --filter @miabega/core
+          --filter @miabega/web
+          typecheck
+
+      - name: Typecheck (mobile — non bloquant)
+        # Les types Expo générés (.expo/types via typedRoutes) ne sont pas
+        # présents en CI sans `expo start`. On l'exécute sans faire échouer le job.
+        continue-on-error: true
+        run: pnpm --filter @miabega/mobile typecheck
